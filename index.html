@@ -3,166 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Học Thuộc Lòng Tương Tác (Cloud)</title>
+    <title>Phần Mềm Học Thuộc Lòng</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+        .word-box { display: inline-block; margin: 2px; }
+        .hidden-word { cursor: pointer; user-select: none; }
+        .input-word { width: 70px; text-align: center; border-bottom: 2px solid #ccc; outline: none; background-color: transparent; }
+        .input-word:focus { border-bottom-color: #3b82f6; }
+        /* Hiệu ứng chớp đỏ khi gõ sai */
+        @keyframes flashRed {
+            0% { background-color: #fca5a5; }
+            100% { background-color: transparent; }
         }
-        .reading-font {
-            font-family: 'Merriweather', serif;
-            line-height: 2;
-        }
-        /* Custom inputs for Mode 2 */
-        .blank-input {
-            border: none;
-            border-bottom: 2px solid #cbd5e1;
-            background-color: transparent;
-            text-align: center;
-            outline: none;
-            font-family: 'Merriweather', serif;
-            padding: 0 2px;
-            transition: all 0.2s;
-            color: #334155;
-        }
-        .blank-input:focus {
-            border-bottom-color: #3b82f6;
-            background-color: #eff6ff;
-        }
-        .blank-input.correct {
-            border-bottom-color: #22c55e;
-            color: #16a34a;
-            background-color: #f0fdf4;
-            pointer-events: none;
-        }
-        .blank-input.incorrect {
-            border-bottom-color: #ef4444;
-            color: #dc2626;
-            background-color: #fef2f2;
-        }
-        /* Hidden words for Mode 1 & 3 */
-        .word-hidden {
-            background-color: #cbd5e1;
-            color: transparent;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        .word-hidden:hover {
-            background-color: #94a3b8;
-        }
-        .word-revealed {
-            background-color: transparent;
-            color: inherit;
-            cursor: default;
-        }
-        /* Active word target for Mode 3 */
-        .word-target {
-            background-color: #bfdbfe;
-            box-shadow: 0 0 0 2px #3b82f6;
-        }
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .flash-error { animation: flashRed 0.5s ease-out; }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen py-6 px-4 sm:px-6 lg:px-8">
-
-    <!-- Header -->
-    <div class="text-center space-y-2 mb-8 max-w-6xl mx-auto">
-        <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Học Thuộc Lòng Tương Tác 🧠</h1>
-        <p class="text-slate-500 text-sm sm:text-base">Đồng bộ Cloud - Lưu trữ mọi bài học của bạn</p>
-    </div>
-
-    <div class="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6">
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans text-gray-800">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- Sidebar: Firebase Saved Lessons -->
-        <div class="w-full lg:w-1/3 flex flex-col gap-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col h-full max-h-[400px] lg:max-h-[800px]">
-                <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2 border-b pb-2">
-                    <span>📚</span> Thư viện bài học
-                </h3>
-                <div id="loadingIndicator" class="text-sm text-slate-500 italic py-4 text-center">Đang tải dữ liệu từ Cloud...</div>
-                <div id="lessonList" class="flex-1 overflow-y-auto space-y-2 pr-2 hidden">
-                    <!-- Lessons will be injected here by JS -->
+        <!-- CỘT TRÁI: QUẢN LÝ DỮ LIỆU FIREBASE -->
+        <div class="md:col-span-1 space-y-6">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="font-bold text-lg mb-4 text-blue-700 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                    1. Nhập văn bản mới
+                </h2>
+                <input type="text" id="lessonTitle" placeholder="Tên bài (VD: Tuyên Ngôn Độc Lập)" class="w-full mb-3 p-3 border rounded-lg focus:ring-2 focus:ring-blue-300 focus:outline-none bg-gray-50">
+                <textarea id="sourceText" rows="6" placeholder="Nhập văn bản bạn cần học thuộc lòng vào đây..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-300 focus:outline-none bg-gray-50 mb-3"></textarea>
+                <button id="btnSave" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
+                    Lưu Lên Đám Mây
+                </button>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="font-bold text-lg mb-4 text-blue-700 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                    Thư viện bài học
+                </h2>
+                <div id="lessonList" class="space-y-2 text-sm max-h-[300px] overflow-y-auto pr-2">
+                    <p class="text-gray-500 italic">Đang kết nối cơ sở dữ liệu...</p>
                 </div>
             </div>
         </div>
 
-        <!-- Main Workspace -->
-        <div class="w-full lg:w-2/3 space-y-6">
-            
-            <!-- Input Section -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 transition-shadow hover:shadow-md">
-                <div class="flex flex-col sm:flex-row gap-3 mb-3">
-                    <input type="text" id="lessonTitle" 
-                        class="flex-1 rounded-xl border-slate-300 bg-slate-50 p-3 text-slate-800 focus:border-blue-500 focus:ring-blue-500 focus:bg-white transition-colors text-sm sm:text-base font-medium"
-                        placeholder="Tên bài học (VD: Bài 1 - Tây Tiến)">
-                    <button id="btnSave" class="px-5 py-3 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 shadow-sm shrink-0">
-                        <span>💾</span> Lưu bài
-                    </button>
-                </div>
-                <textarea id="sourceText" rows="5" 
-                    class="w-full rounded-xl border-slate-300 bg-slate-50 p-4 text-slate-800 focus:border-blue-500 focus:ring-blue-500 focus:bg-white transition-colors resize-y shadow-inner text-base"
-                    placeholder="Nhập đoạn văn, bài thơ hoặc nội dung cần học vào đây..."></textarea>
-            </div>
-
-            <!-- Controls Section -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6">
-                <div class="flex flex-col sm:flex-row flex-wrap gap-3 justify-center items-stretch">
-                    <button onclick="startMode(1)" class="flex-1 px-4 py-3 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded-xl font-medium transition-colors flex flex-col items-center justify-center gap-1">
-                        <span class="text-lg">👆</span> 
-                        <span class="text-sm text-center">Chạm mở từ</span>
-                    </button>
-                    <button onclick="startMode(2)" class="flex-1 px-4 py-3 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-xl font-medium transition-colors flex flex-col items-center justify-center gap-1">
-                        <span class="text-lg">✍️</span> 
-                        <span class="text-sm text-center">Điền chỗ trống</span>
-                    </button>
-                    <button onclick="startMode(3)" class="flex-1 px-4 py-3 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-xl font-medium transition-colors flex flex-col items-center justify-center gap-1">
-                        <span class="text-lg">⌨️</span> 
-                        <span class="text-sm text-center">Gõ chữ cái đầu</span>
-                    </button>
-                    <div class="w-full sm:w-px sm:h-auto bg-slate-200 mx-1 hidden sm:block"></div>
-                    <button onclick="resetApp()" class="px-4 py-3 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl font-medium transition-colors flex flex-col items-center justify-center gap-1 w-full sm:w-auto">
-                        <span class="text-lg">🔄</span>
-                        <span class="text-sm">Làm lại</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Output Section -->
-            <div class="bg-[#fdfbf7] rounded-2xl shadow-md border border-[#e5e0d8] p-6 sm:p-8 md:p-10 min-h-[400px] relative">
-                <div class="flex items-center justify-between mb-6 border-b border-slate-200 pb-3">
-                    <h2 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                        <span>📖</span> Khu vực luyện tập
-                    </h2>
-                    <span id="modeIndicator" class="text-sm font-medium px-3 py-1 bg-slate-200 text-slate-700 rounded-full shadow-sm">
-                        Chưa chọn chế độ
-                    </span>
+        <!-- CỘT PHẢI: KHU VỰC TƯƠNG TÁC HỌC TẬP -->
+        <div class="md:col-span-2 space-y-6">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 min-h-[550px] flex flex-col">
+                <h2 class="font-bold text-lg mb-4 text-blue-700 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    2. Chọn phương pháp học
+                </h2>
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <button id="btnMode1" class="py-3 px-2 bg-indigo-50 text-indigo-700 font-semibold rounded-lg hover:bg-indigo-100 border border-indigo-200 transition">👆 Chạm mở từ</button>
+                    <button id="btnMode2" class="py-3 px-2 bg-emerald-50 text-emerald-700 font-semibold rounded-lg hover:bg-emerald-100 border border-emerald-200 transition">✍️ Điền chỗ trống</button>
+                    <button id="btnMode3" class="py-3 px-2 bg-amber-50 text-amber-700 font-semibold rounded-lg hover:bg-amber-100 border border-amber-200 transition">⌨️ Gõ chữ cái đầu</button>
                 </div>
                 
-                <div id="instructionText" class="text-slate-500 text-sm mb-4 hidden italic"></div>
-
-                <div id="workspace" class="reading-font text-lg sm:text-xl text-slate-800 whitespace-pre-wrap">
-                    <span class="text-slate-400 italic font-sans text-base">Kết quả sẽ hiển thị ở đây. Hãy nhập văn bản và chọn chế độ bên trên...</span>
+                <div class="bg-slate-50 p-6 border rounded-xl flex-grow text-xl leading-loose overflow-y-auto" id="practiceArea">
+                    <div class="text-center mt-20 text-gray-400">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        <p>Chọn một bài học bên trái và bắt đầu luyện tập</p>
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Firebase & Logic Script (Module) -->
+    <!-- MÃ JAVASCRIPT & FIREBASE -->
     <script type="module">
-        // 1. Firebase Configuration & Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, serverTimestamp, query, orderBy } 
-        from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+        // 1. Khai báo thư viện Firebase từ CDN (Dành cho trình duyệt)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
+        // 2. Cấu hình Firebase của bạn
         const firebaseConfig = {
             apiKey: "AIzaSyB7dUr9hu-FJmcrb9oxUZ9rSY2nUzXobbw",
             authDomain: "htlmylan.firebaseapp.com",
@@ -172,387 +85,254 @@
             appId: "1:451089656401:web:fa2837b5977f08b8a5e670"
         };
 
-        // Initialize Firebase
+        // Khởi tạo Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const lessonsCollection = collection(db, "lessons");
 
-        // 2. DOM Elements
-        const sourceTextArea = document.getElementById('sourceText');
-        const lessonTitleInput = document.getElementById('lessonTitle');
-        const btnSave = document.getElementById('btnSave');
-        const lessonListEl = document.getElementById('lessonList');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        
-        const workspace = document.getElementById('workspace');
-        const modeIndicator = document.getElementById('modeIndicator');
-        const instructionText = document.getElementById('instructionText');
-
-        // State variables for memorization logic
-        let currentTokens = [];
-        let currentMode = 0;
-        let mode3TargetIndex = -1;
-
-        // ==========================================
-        // FIREBASE LOGIC
-        // ==========================================
-
-        async function loadLessonsFromFirebase() {
+        // --- HÀM TẢI DANH SÁCH BÀI HỌC ---
+        const loadLessons = async () => {
+            const listEl = document.getElementById("lessonList");
             try {
-                loadingIndicator.classList.remove('hidden');
-                lessonListEl.classList.add('hidden');
-                lessonListEl.innerHTML = '';
-
-                // Load lessons ordered by creation time (newest first)
-                const q = query(lessonsCollection, orderBy("createdAt", "desc"));
+                const q = query(collection(db, "lessons"), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
+                listEl.innerHTML = "";
                 
-                loadingIndicator.classList.add('hidden');
-                lessonListEl.classList.remove('hidden');
-
-                if (querySnapshot.empty) {
-                    lessonListEl.innerHTML = '<p class="text-sm text-slate-500 italic text-center py-4">Chưa có bài học nào. Hãy lưu bài đầu tiên của bạn!</p>';
+                if(querySnapshot.empty) {
+                    listEl.innerHTML = "<p class='text-gray-500 italic text-sm'>Chưa có bài học nào được lưu.</p>";
                     return;
                 }
 
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    
-                    const item = document.createElement('div');
-                    item.className = "group flex items-center justify-between p-3 bg-slate-50 hover:bg-blue-50 rounded-lg border border-slate-100 cursor-pointer transition-colors";
-                    
-                    const titleSpan = document.createElement('span');
-                    titleSpan.className = "text-sm font-medium text-slate-700 group-hover:text-blue-700 truncate pr-2";
-                    titleSpan.textContent = data.title || "Bài học không tên";
-                    titleSpan.onclick = () => loadLessonToWorkspace(data.title, data.content);
-
-                    const delBtn = document.createElement('button');
-                    delBtn.className = "text-slate-400 hover:text-rose-500 p-1 rounded-md hover:bg-rose-50 transition-colors";
-                    delBtn.innerHTML = '🗑️';
-                    delBtn.title = "Xóa bài này";
-                    delBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        deleteLesson(docSnap.id);
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const div = document.createElement("div");
+                    div.className = "p-3 bg-white border border-gray-100 shadow-sm rounded-lg cursor-pointer hover:border-blue-300 hover:shadow transition group";
+                    div.innerHTML = `
+                        <div class="font-semibold text-gray-800 group-hover:text-blue-600 transition">${data.title}</div>
+                        <div class="text-xs text-gray-400 mt-1 truncate">${data.content.substring(0, 40)}...</div>
+                    `;
+                    div.onclick = () => {
+                        document.getElementById("lessonTitle").value = data.title;
+                        document.getElementById("sourceText").value = data.content;
+                        document.getElementById("practiceArea").innerHTML = `
+                            <div class="text-center mt-10">
+                                <span class="inline-block px-4 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">Đã nạp bài học</span>
+                                <h3 class="text-2xl font-bold text-gray-800">${data.title}</h3>
+                                <p class="text-gray-500 mt-2 text-base">Hãy chọn một phương pháp học ở phía trên.</p>
+                            </div>
+                        `;
                     };
-
-                    item.appendChild(titleSpan);
-                    item.appendChild(delBtn);
-                    lessonListEl.appendChild(item);
+                    listEl.appendChild(div);
                 });
             } catch (error) {
-                console.error("Lỗi tải dữ liệu: ", error);
-                loadingIndicator.textContent = "Không thể tải dữ liệu. Vui lòng kiểm tra quyền truy cập Firestore.";
+                console.error("Lỗi:", error);
+                listEl.innerHTML = `<p class="text-red-500 text-sm">Không thể tải dữ liệu. Hãy kiểm tra lại Rule của Firestore đã được cấp quyền chưa.</p>`;
             }
-        }
+        };
 
-        async function saveLesson() {
-            const title = lessonTitleInput.value.trim();
-            const content = sourceTextArea.value.trim();
+        // Tự động tải dữ liệu khi mở web
+        loadLessons();
 
-            if (!content) {
-                alert("Vui lòng nhập nội dung bài học trước khi lưu!");
+        // --- SỰ KIỆN LƯU BÀI HỌC ---
+        document.getElementById("btnSave").addEventListener("click", async () => {
+            const title = document.getElementById("lessonTitle").value.trim();
+            const content = document.getElementById("sourceText").value.trim();
+            const btn = document.getElementById("btnSave");
+
+            if (!title || !content) {
+                alert("Vui lòng nhập đầy đủ tên bài và nội dung!");
                 return;
             }
 
-            const finalTitle = title || "Bài học mới " + new Date().toLocaleDateString('vi-VN');
-            btnSave.disabled = true;
-            btnSave.innerHTML = "⏳ Đang lưu...";
+            btn.innerText = "Đang lưu trữ...";
+            btn.classList.add("opacity-75");
+            btn.disabled = true;
 
             try {
-                await addDoc(lessonsCollection, {
-                    title: finalTitle,
+                await addDoc(collection(db, "lessons"), {
+                    title: title,
                     content: content,
-                    createdAt: serverTimestamp()
+                    timestamp: new Date()
                 });
-                // Reset fields and reload list
-                lessonTitleInput.value = '';
-                await loadLessonsFromFirebase();
-                alert("Đã lưu bài học thành công!");
-            } catch (error) {
-                console.error("Lỗi lưu bài: ", error);
-                alert("Có lỗi xảy ra khi lưu. Vui lòng thử lại.");
-            } finally {
-                btnSave.disabled = false;
-                btnSave.innerHTML = "<span>💾</span> Lưu bài";
-            }
-        }
-
-        async function deleteLesson(docId) {
-            if (!confirm("Bạn có chắc chắn muốn xóa bài học này không?")) return;
-            try {
-                await deleteDoc(doc(db, "lessons", docId));
-                loadLessonsFromFirebase();
-            } catch (error) {
-                console.error("Lỗi xóa bài: ", error);
-                alert("Không thể xóa bài học.");
-            }
-        }
-
-        function loadLessonToWorkspace(title, content) {
-            lessonTitleInput.value = title;
-            sourceTextArea.value = content;
-            window.resetApp(); // Clear active modes
-        }
-
-        // Attach event listener
-        btnSave.addEventListener('click', saveLesson);
-        
-        // Initial load
-        loadLessonsFromFirebase();
-
-
-        // ==========================================
-        // MEMORIZATION LOGIC
-        // ==========================================
-
-        function removeVietnameseTones(str) {
-            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
-            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
-            str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
-            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
-            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
-            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
-            str = str.replace(/đ/g,"d");
-            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
-            str = str.replace(/Đ/g, "D");
-            str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); 
-            str = str.replace(/\u02C6|\u0306|\u031B/g, ""); 
-            return str;
-        }
-
-        function getNormalizedFirstLetter(word) {
-            if (!word) return '';
-            return removeVietnameseTones(word.charAt(0)).toLowerCase();
-        }
-
-        function tokenizeText(text) {
-            const regex = /([\p{L}0-9_]+)|([^[\p{L}0-9_]+)/gu;
-            let tokens = [];
-            let match;
-            while ((match = regex.exec(text)) !== null) {
-                if (match[1]) tokens.push({ type: 'word', text: match[1] });
-                else if (match[2]) tokens.push({ type: 'other', text: match[2] });
-            }
-            return tokens;
-        }
-
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, tag => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-            }[tag]));
-        }
-
-        function renderMode1() {
-            let html = '';
-            currentTokens.forEach((token, index) => {
-                if (token.type === 'word') {
-                    const safeText = escapeHTML(token.text);
-                    html += `<span class="word-hidden" id="word-${index}" onclick="revealWord(${index})">${safeText}</span>`;
-                } else html += escapeHTML(token.text);
-            });
-            workspace.innerHTML = html;
-        }
-
-        window.revealWord = function(index) {
-            if (currentMode !== 1) return;
-            const el = document.getElementById(`word-${index}`);
-            if (el) {
-                el.classList.remove('word-hidden');
-                el.classList.add('word-revealed');
-            }
-        };
-
-        function renderMode2() {
-            let html = '';
-            currentTokens.forEach((token, index) => {
-                if (token.type === 'word') {
-                    if (Math.random() < 0.3) {
-                        const width = token.text.length + 1;
-                        html += `<input type="text" 
-                                    id="input-${index}" 
-                                    class="blank-input" 
-                                    style="width: ${width}ch;" 
-                                    data-answer="${escapeHTML(token.text)}"
-                                    oninput="checkMatch(${index})"
-                                    onkeydown="if(event.key === 'Enter') verifyInput(${index}, true)"
-                                    onblur="verifyInput(${index}, false)"
-                                    autocomplete="off">`;
-                    } else html += escapeHTML(token.text);
-                } else html += escapeHTML(token.text);
-            });
-            workspace.innerHTML = html;
-        }
-
-        window.checkMatch = function(index) {
-            if (currentMode !== 2) return;
-            const input = document.getElementById(`input-${index}`);
-            if (!input) return;
-
-            const correctAnswer = input.getAttribute('data-answer');
-            const rawValue = input.value;
-            const userAnswer = rawValue.trim();
-
-            if (userAnswer === '' && rawValue.length > 0) {
-                input.value = '';
-                return;
-            }
-            if (userAnswer === '') return;
-
-            const normalizedUser = removeVietnameseTones(userAnswer).toLowerCase();
-            const normalizedCorrect = removeVietnameseTones(correctAnswer).toLowerCase();
-
-            if (normalizedUser === normalizedCorrect) {
-                input.value = correctAnswer;
-                input.classList.remove('incorrect');
-                input.classList.add('correct');
                 
-                const allInputs = Array.from(workspace.querySelectorAll('input.blank-input:not(.correct)'));
-                const currentIndexInArray = allInputs.indexOf(input);
-                if (currentIndexInArray !== -1 && currentIndexInArray + 1 < allInputs.length) {
-                    allInputs[currentIndexInArray + 1].focus();
-                } else if (allInputs.length > 0 && allInputs[0] !== input) {
-                    allInputs[0].focus();
-                } else {
-                    input.blur(); 
-                }
-            } else if (rawValue.endsWith(' ')) { // Nhấn phím cách (space) khi sai để xóa
-                verifyInput(index, true);
-            }
-        };
-
-        window.verifyInput = function(index, keepFocus) {
-            if (currentMode !== 2) return;
-            const input = document.getElementById(`input-${index}`);
-            
-            if (!input || input.classList.contains('correct') || input.value.trim() === '') {
-                if (input && !input.classList.contains('correct')) input.value = '';
-                return;
-            }
-
-            input.classList.add('incorrect');
-            input.value = ''; // Xóa luôn để nhập lại
-            
-            if (keepFocus) input.focus();
-
-            setTimeout(() => input.classList.remove('incorrect'), 500);
-        };
-
-        function renderMode3() {
-            let html = '';
-            let firstWordFound = false;
-            
-            currentTokens.forEach((token, index) => {
-                if (token.type === 'word') {
-                    const safeText = escapeHTML(token.text);
-                    let extraClass = '';
-                    
-                    if (!firstWordFound) {
-                        mode3TargetIndex = index;
-                        extraClass = 'word-target';
-                        firstWordFound = true;
-                    }
-                    html += `<span class="word-hidden ${extraClass}" id="word-${index}" data-word="${safeText}">${safeText}</span>`;
-                } else html += escapeHTML(token.text);
-            });
-            workspace.innerHTML = html;
-            if (!firstWordFound) mode3TargetIndex = -1;
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (currentMode !== 3 || mode3TargetIndex === -1) return;
-            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
-            if (e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
-
-            const targetToken = currentTokens[mode3TargetIndex];
-            const expectedLetter = getNormalizedFirstLetter(targetToken.text);
-            const typedLetter = removeVietnameseTones(e.key).toLowerCase();
-
-            if (typedLetter === expectedLetter) {
-                const currentEl = document.getElementById(`word-${mode3TargetIndex}`);
-                if (currentEl) {
-                    currentEl.classList.remove('word-hidden', 'word-target');
-                    currentEl.classList.add('word-revealed');
-                }
-
-                let nextTargetIndex = -1;
-                for (let i = mode3TargetIndex + 1; i < currentTokens.length; i++) {
-                    if (currentTokens[i].type === 'word') {
-                        nextTargetIndex = i;
-                        break;
-                    }
-                }
-                mode3TargetIndex = nextTargetIndex;
-
-                if (mode3TargetIndex !== -1) {
-                    const nextEl = document.getElementById(`word-${mode3TargetIndex}`);
-                    if (nextEl) {
-                        nextEl.classList.add('word-target');
-                        const rect = nextEl.getBoundingClientRect();
-                        if (rect.bottom > window.innerHeight || rect.top < 0) {
-                            nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
-                    }
-                } else {
-                    instructionText.textContent = "🎉 Chúc mừng! Bạn đã hoàn thành bài học.";
-                    instructionText.classList.add('text-green-600', 'font-semibold');
-                    instructionText.classList.remove('text-slate-500', 'italic');
-                }
-            } else {
-                const currentEl = document.getElementById(`word-${mode3TargetIndex}`);
-                if (currentEl) {
-                    currentEl.style.transform = 'translateX(-4px)';
-                    setTimeout(() => currentEl.style.transform = 'translateX(4px)', 50);
-                    setTimeout(() => currentEl.style.transform = 'translateX(0)', 100);
-                }
+                document.getElementById("lessonTitle").value = "";
+                document.getElementById("sourceText").value = "";
+                
+                // Hiển thị thông báo ngay trong khu vực học
+                document.getElementById("practiceArea").innerHTML = `
+                    <div class="text-center mt-20 text-green-600">
+                        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="text-xl font-bold">Lưu bài học thành công!</p>
+                    </div>
+                `;
+                loadLessons(); // Refresh danh sách
+            } catch (error) {
+                alert("Lỗi lưu dữ liệu: " + error.message);
+            } finally {
+                btn.innerText = "Lưu Lên Đám Mây";
+                btn.classList.remove("opacity-75");
+                btn.disabled = false;
             }
         });
 
-        // Tự động gắn các hàm vào window để gọi từ HTML
-        window.startMode = function(mode) {
-            const text = sourceTextArea.value.trim();
-            if (!text) {
-                workspace.innerHTML = '<span class="text-rose-500 italic font-sans text-base">Vui lòng nhập văn bản cần học trước!</span>';
-                return;
-            }
 
-            currentMode = mode;
-            currentTokens = tokenizeText(text);
+        // ==========================================
+        // KHU VỰC XỬ LÝ LOGIC HỌC THUỘC LÒNG
+        // ==========================================
+
+        // Hàm chuẩn hóa tiếng Việt cực mạnh (Bỏ dấu, đưa về chữ thường)
+        function removeVietnameseTones(str) {
+            if(!str) return "";
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+            // Xóa các ký tự đặc biệt chỉ giữ lại chữ cái và số
+            str = str.replace(/[^a-z0-9]/g, ""); 
+            return str.toLowerCase();
+        }
+
+        // Tách văn bản thành mảng các từ và dấu câu
+        function parseText() {
+            const text = document.getElementById('sourceText').value;
+            if(!text) {
+                alert('Bạn cần chọn một bài học từ thư viện hoặc nhập nội dung mới.');
+                return null;
+            }
+            return text.split(/([\s,.\n:;!?]+)/); 
+        }
+
+        // --- Chế độ 1: Chạm để mở từ ---
+        document.getElementById("btnMode1").addEventListener("click", () => {
+            const tokens = parseText();
+            if(!tokens) return;
+            const area = document.getElementById('practiceArea');
+            area.innerHTML = '<div class="text-sm text-gray-500 mb-4 font-normal">* Hướng dẫn: Chạm vào các khối màu tím để mở khóa từ bị ẩn.</div>';
             
-            instructionText.classList.remove('hidden', 'text-green-600', 'font-semibold');
-            instructionText.classList.add('text-slate-500', 'italic');
+            tokens.forEach(token => {
+                if (/^[\s,.\n:;!?]+$/.test(token)) {
+                    area.appendChild(document.createTextNode(token));
+                } else if(token.trim() !== "") {
+                    const span = document.createElement('span');
+                    span.className = 'word-box hidden-word bg-indigo-200 text-transparent px-2 rounded select-none hover:bg-indigo-300 transition duration-300';
+                    span.innerText = token;
+                    span.onclick = () => {
+                        span.classList.remove('bg-indigo-200', 'text-transparent', 'hover:bg-indigo-300');
+                        span.classList.add('text-indigo-900', 'font-bold');
+                    };
+                    area.appendChild(span);
+                }
+            });
+        });
 
-            if (mode === 1) {
-                modeIndicator.textContent = "👆 Chế độ: Chạm mở từ";
-                modeIndicator.className = "text-sm font-semibold px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full shadow-sm";
-                instructionText.textContent = "Nhẩm đọc trong đầu. Bấm vào khối màu xám để xem từ nếu bạn quên.";
-                renderMode1();
-            } else if (mode === 2) {
-                modeIndicator.textContent = "✍️ Chế độ: Điền chỗ trống";
-                modeIndicator.className = "text-sm font-semibold px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full shadow-sm";
-                instructionText.textContent = "Gõ từ chính xác vào ô trống. Bấm Space (dấu cách) để xóa nhập lại nếu sai.";
-                renderMode2();
-            } else if (mode === 3) {
-                modeIndicator.textContent = "⌨️ Chế độ: Gõ chữ cái đầu";
-                modeIndicator.className = "text-sm font-semibold px-3 py-1 bg-amber-100 text-amber-800 rounded-full shadow-sm";
-                instructionText.textContent = "Bấm bất kỳ phím chữ cái nào (A-Z) khớp với chữ cái ĐẦU TIÊN của từ đang được bôi đậm.";
-                renderMode3();
+        // --- Chế độ 2: Điền chỗ trống (Tự động xóa nếu sai) ---
+        document.getElementById("btnMode2").addEventListener("click", () => {
+            const tokens = parseText();
+            if(!tokens) return;
+            const area = document.getElementById('practiceArea');
+            area.innerHTML = '<div class="text-sm text-gray-500 mb-4 font-normal">* Hướng dẫn: Gõ từ còn thiếu. Ô sẽ tự chuyển xanh nếu gõ đúng không dấu. <br><span class="text-red-500">* Mẹo: Nếu lỡ gõ sai, chỉ cần bấm phím Cách (Space), ô sẽ tự xóa để gõ lại.</span></div>';
+            
+            tokens.forEach(token => {
+                if (/^[\s,.\n:;!?]+$/.test(token)) {
+                    area.appendChild(document.createTextNode(token));
+                } else if(token.trim() !== "") {
+                    if (Math.random() > 0.4) { 
+                        // 60% hiện từ
+                        area.appendChild(document.createTextNode(token));
+                    } else {
+                        // 40% tạo input
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'word-box input-word transition-colors duration-200';
+                        // Đặt kích thước ô vừa phải
+                        input.style.width = Math.max(50, token.length * 12) + "px"; 
+                        
+                        input.addEventListener('input', (e) => {
+                            let val = input.value;
+                            let targetWord = removeVietnameseTones(token); // Đáp án đã chuẩn hóa
+                            
+                            // Nếu người dùng bấm dấu cách (Space)
+                            if(val.includes(' ')) {
+                                let cleanVal = removeVietnameseTones(val.replace(/\s/g, ''));
+                                
+                                if(cleanVal === targetWord) {
+                                    // ĐÚNG: Khóa xanh
+                                    input.value = token;
+                                    input.className = 'word-box input-word bg-emerald-100 text-emerald-800 font-bold border-none rounded px-1';
+                                    input.disabled = true;
+                                } else {
+                                    // SAI: Chớp đỏ, tự động xóa sạch, không cho sang từ khác
+                                    input.value = '';
+                                    input.classList.add('flash-error');
+                                    setTimeout(() => input.classList.remove('flash-error'), 500);
+                                }
+                            } else {
+                                // Real-time kiểm tra từng ký tự đang gõ
+                                let cleanVal = removeVietnameseTones(val);
+                                if(cleanVal === targetWord) {
+                                    // ĐÚNG: Khóa xanh ngay lập tức không cần bấm Space
+                                    input.value = token;
+                                    input.className = 'word-box input-word bg-emerald-100 text-emerald-800 font-bold border-none rounded px-1';
+                                    input.disabled = true;
+                                    // Chuyển focus sang ô input kế tiếp (nếu có)
+                                    const nextInput = input.nextElementSibling;
+                                    if(nextInput && nextInput.tagName === 'INPUT') nextInput.focus();
+                                }
+                            }
+                        });
+                        area.appendChild(input);
+                    }
+                }
+            });
+        });
+
+        // --- Chế độ 3: Gõ chữ cái đầu ---
+        document.getElementById("btnMode3").addEventListener("click", () => {
+            const tokens = parseText();
+            if(!tokens) return;
+            const area = document.getElementById('practiceArea');
+            area.innerHTML = '<div class="text-sm text-gray-500 mb-4 font-normal">* Hướng dẫn: Gõ liên tục phím chữ cái đầu tiên của từng từ để mở khóa.</div>';
+            
+            const wordsData = [];
+            tokens.forEach(token => {
+                if (/^[\s,.\n:;!?]+$/.test(token)) {
+                    const span = document.createElement('span');
+                    span.innerText = token;
+                    area.appendChild(span);
+                } else if(token.trim() !== "") {
+                    const span = document.createElement('span');
+                    span.className = 'word-box text-transparent bg-amber-200 px-1 rounded transition-colors duration-300 border-b-2 border-amber-300';
+                    span.innerText = token;
+                    area.appendChild(span);
+                    wordsData.push({ element: span, word: token });
+                }
+            });
+
+            let currentIndex = 0;
+            const keyHandler = (e) => {
+                if(currentIndex >= wordsData.length) {
+                    document.removeEventListener('keydown', keyHandler);
+                    return;
+                }
+                const targetObj = wordsData[currentIndex];
+                const expectedLetter = removeVietnameseTones(targetObj.word.charAt(0));
+                
+                if(removeVietnameseTones(e.key) === expectedLetter) {
+                    targetObj.element.classList.remove('text-transparent', 'bg-amber-200', 'border-b-2', 'border-amber-300');
+                    targetObj.element.classList.add('text-amber-900', 'font-bold');
+                    currentIndex++;
+                }
+            };
+            
+            // Đảm bảo không bị trùng lặp sự kiện khi bấm nhiều lần
+            if(window.currentKeyHandler) {
+                document.removeEventListener('keydown', window.currentKeyHandler);
             }
-        };
-
-        window.resetApp = function() {
-            currentMode = 0;
-            mode3TargetIndex = -1;
-            workspace.innerHTML = '<span class="text-slate-400 italic font-sans text-base">Kết quả sẽ hiển thị ở đây. Hãy nhập văn bản và chọn chế độ bên trên...</span>';
-            modeIndicator.textContent = 'Chưa chọn chế độ';
-            modeIndicator.className = 'text-sm font-medium px-3 py-1 bg-slate-200 text-slate-700 rounded-full shadow-sm';
-            instructionText.classList.add('hidden');
-        };
-
+            window.currentKeyHandler = keyHandler;
+            document.addEventListener('keydown', keyHandler);
+        });
     </script>
 </body>
 </html>
