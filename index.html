@@ -93,13 +93,12 @@
         <!-- CỘT PHẢI: KHU VỰC TƯƠNG TÁC HỌC TẬP -->
         <div id="rightColumn" class="md:col-span-2 space-y-4 md:space-y-6">
             
-            <!-- Nút quay lại dành riêng cho Mobile -->
             <button id="btnBackMobile" class="hidden md:hidden w-full bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center transition-colors hover:bg-slate-300">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Quay lại Danh sách & Soạn thảo
             </button>
 
-            <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border border-gray-100 min-h-[400px] md:min-h-[600px] flex flex-col">
+            <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border border-gray-100 min-h-[400px] md:min-h-[600px] flex flex-col relative">
                 <div class="flex justify-between items-center mb-3 md:mb-4">
                     <h2 class="font-bold text-base md:text-lg text-blue-700 flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
@@ -114,7 +113,7 @@
                     <button id="btnMode3" class="py-2 md:py-3 px-1 md:px-2 bg-amber-50 text-amber-700 font-semibold rounded-lg hover:bg-amber-100 border border-amber-200 transition text-[11px] sm:text-xs md:text-sm">⌨️ Chữ cái đầu</button>
                 </div>
                 
-                <div class="bg-slate-50 p-4 md:p-6 border rounded-xl flex-grow text-lg md:text-xl leading-[2.2] md:leading-loose overflow-y-auto break-words whitespace-pre-wrap" id="practiceArea">
+                <div class="bg-slate-50 p-4 md:p-6 border rounded-xl flex-grow text-lg md:text-xl leading-[2.2] md:leading-loose overflow-y-auto break-words whitespace-pre-wrap cursor-text" id="practiceArea">
                     <div class="text-center mt-10 md:mt-20 text-gray-400">
                         <svg class="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                         <p class="text-sm md:text-base">Kết quả sẽ hiển thị ở đây. Hãy chọn một bài học và chọn chế độ bên trên...</p>
@@ -144,7 +143,6 @@
         let globalWrongWords = []; 
         const globalStatsRef = doc(db, "settings", "wrongWordsDict");
 
-        // Xử lý nút Back trên Mobile
         document.getElementById("btnBackMobile").addEventListener("click", () => {
             document.getElementById("leftColumn").classList.remove("hidden", "md:block");
             document.getElementById("btnBackMobile").classList.add("hidden");
@@ -397,9 +395,6 @@
             });
         });
 
-        // ==========================================
-        // CHẾ ĐỘ 2: ĐIỀN CHỖ TRỐNG - TỰ ĐỘNG FOCUS
-        // ==========================================
         document.getElementById("btnMode2").addEventListener("click", () => {
             const tokens = parseText();
             if(!tokens) return;
@@ -495,19 +490,36 @@
                 }
             });
 
-            // Tự động focus vào ô trống đầu tiên ngay khi render xong
             const firstInput = area.querySelector('input');
             if (firstInput) {
                 firstInput.focus();
             }
         });
 
+        // ==========================================
+        // CHẾ ĐỘ 3: GÕ CHỮ CÁI ĐẦU - GỌI BÀN PHÍM ĐIỆN THOẠI
+        // ==========================================
         document.getElementById("btnMode3").addEventListener("click", () => {
             const tokens = parseText();
             if(!tokens) return;
             const area = document.getElementById('practiceArea');
-            area.innerHTML = '<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic">* Hướng dẫn: Gõ liên tục phím chữ cái đầu tiên của từng từ để mở khóa (không phân biệt chữ hoa).</div>';
+            area.innerHTML = '<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic">* Hướng dẫn: Gõ liên tục phím chữ cái đầu tiên của từng từ để mở khóa. <br/><span class="text-blue-500 font-semibold">(Nếu bàn phím bị ẩn, hãy chạm vào vùng này để hiện lại)</span></div>';
             
+            // TẠO INPUT TÀNG HÌNH ĐỂ GỌI BÀN PHÍM ĐIỆN THOẠI
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'text';
+            hiddenInput.className = 'absolute opacity-0 w-[1px] h-[1px] -z-10';
+            hiddenInput.setAttribute('autocomplete', 'off');
+            hiddenInput.setAttribute('autocorrect', 'off');
+            hiddenInput.setAttribute('autocapitalize', 'none');
+            hiddenInput.setAttribute('spellcheck', 'false');
+            area.appendChild(hiddenInput);
+
+            // Bấm vào khu vực học sẽ focus lại input tàng hình để gọi bàn phím
+            area.onclick = () => {
+                hiddenInput.focus();
+            };
+
             const wordsData = [];
             tokens.forEach(token => {
                 if (/^[\s,.\n:;!?]+$/.test(token)) {
@@ -524,25 +536,30 @@
             });
 
             let currentIndex = 0;
-            const keyHandler = (e) => {
-                if(currentIndex >= wordsData.length) {
-                    document.removeEventListener('keydown', keyHandler);
-                    return;
-                }
+            
+            // Lắng nghe sự kiện gõ phím trực tiếp trên thẻ tàng hình
+            hiddenInput.addEventListener('input', (e) => {
+                if(currentIndex >= wordsData.length) return;
+                
+                const val = hiddenInput.value;
+                if(val.length === 0) return;
+                
+                const typedChar = val.slice(-1); // Lấy ký tự cuối cùng vừa gõ
+                hiddenInput.value = ''; // Xóa ngay để không bị tích tụ
+                
                 const targetObj = wordsData[currentIndex];
                 const expectedLetter = removeVietnameseTones(targetObj.word.charAt(0));
-                const typedLetter = removeVietnameseTones(e.key);
+                const cleanTypedLetter = removeVietnameseTones(typedChar);
                 
-                if(typedLetter === expectedLetter) {
+                if(cleanTypedLetter === expectedLetter) {
                     targetObj.element.classList.remove('text-transparent', 'bg-amber-200', 'border-b-2', 'border-amber-300');
                     targetObj.element.classList.add('text-amber-900', 'font-bold');
                     currentIndex++;
                 }
-            };
-            
-            if(window.currentKeyHandler) document.removeEventListener('keydown', window.currentKeyHandler);
-            window.currentKeyHandler = keyHandler;
-            document.addEventListener('keydown', keyHandler);
+            });
+
+            // Delay nhỏ để tránh giật lag UI trước khi bật bàn phím
+            setTimeout(() => hiddenInput.focus(), 150);
         });
     </script>
 </body>
