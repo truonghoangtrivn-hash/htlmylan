@@ -29,10 +29,15 @@
             100% { background-color: transparent; }
         }
         .flash-error { animation: flashRed 0.5s ease-out; }
+
+        /* Custom thanh trượt */
+        input[type=range] {
+            accent-color: #2563eb; /* Tailwind blue-600 */
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen p-3 md:p-8 font-sans text-gray-800">
-    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         
         <!-- CỘT TRÁI: QUẢN LÝ DỮ LIỆU -->
         <div id="leftColumn" class="md:col-span-1 space-y-4 md:space-y-6">
@@ -107,16 +112,19 @@
                     <span id="wrongWordsTracker" class="text-[10px] md:text-xs text-orange-500 font-bold bg-orange-100 px-2 py-1 rounded hidden">Sổ tay: 0 từ khó</span>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2 md:gap-3 mb-4 md:mb-6">
-                    <button id="btnMode1" class="py-2 md:py-3 px-1 md:px-2 bg-indigo-50 text-indigo-700 font-semibold rounded-lg hover:bg-indigo-100 border border-indigo-200 transition text-[11px] sm:text-xs md:text-sm">👆 Chạm mở từ</button>
-                    <button id="btnMode2" class="py-2 md:py-3 px-1 md:px-2 bg-emerald-50 text-emerald-700 font-semibold rounded-lg hover:bg-emerald-100 border border-emerald-200 transition text-[11px] sm:text-xs md:text-sm">✍️ Điền chỗ</button>
-                    <button id="btnMode3" class="py-2 md:py-3 px-1 md:px-2 bg-amber-50 text-amber-700 font-semibold rounded-lg hover:bg-amber-100 border border-amber-200 transition text-[11px] sm:text-xs md:text-sm">⌨️ Chữ cái đầu</button>
+                <!-- 5 NÚT CHỌN CHẾ ĐỘ -->
+                <div class="flex flex-wrap gap-2 md:gap-3 mb-4 md:mb-6">
+                    <button id="btnMode1" class="flex-grow py-2 md:py-3 px-1 md:px-2 bg-indigo-50 text-indigo-700 font-semibold rounded-lg hover:bg-indigo-100 border border-indigo-200 transition text-[11px] sm:text-xs md:text-sm">👆 Chạm mở từ</button>
+                    <button id="btnMode2" class="flex-grow py-2 md:py-3 px-1 md:px-2 bg-emerald-50 text-emerald-700 font-semibold rounded-lg hover:bg-emerald-100 border border-emerald-200 transition text-[11px] sm:text-xs md:text-sm">✍️ Điền chỗ</button>
+                    <button id="btnMode3" class="flex-grow py-2 md:py-3 px-1 md:px-2 bg-amber-50 text-amber-700 font-semibold rounded-lg hover:bg-amber-100 border border-amber-200 transition text-[11px] sm:text-xs md:text-sm">⌨️ Chữ cái đầu</button>
+                    <button id="btnMode4" class="flex-grow py-2 md:py-3 px-1 md:px-2 bg-sky-50 text-sky-700 font-semibold rounded-lg hover:bg-sky-100 border border-sky-200 transition text-[11px] sm:text-xs md:text-sm">🌫️ Ẩn dần</button>
+                    <button id="btnMode5" class="flex-grow py-2 md:py-3 px-1 md:px-2 bg-rose-50 text-rose-700 font-semibold rounded-lg hover:bg-rose-100 border border-rose-200 transition text-[11px] sm:text-xs md:text-sm">🧩 Xếp câu</button>
                 </div>
                 
-                <div class="bg-slate-50 p-4 md:p-6 border rounded-xl flex-grow text-lg md:text-xl leading-[2.2] md:leading-loose overflow-y-auto break-words whitespace-pre-wrap cursor-text" id="practiceArea">
+                <div class="bg-slate-50 p-4 md:p-6 border rounded-xl flex-grow text-lg md:text-xl leading-[2.2] md:leading-loose overflow-y-auto break-words whitespace-pre-wrap cursor-text relative" id="practiceArea">
                     <div class="text-center mt-10 md:mt-20 text-gray-400">
                         <svg class="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        <p class="text-sm md:text-base">Kết quả sẽ hiển thị ở đây. Hãy chọn một bài học và chọn chế độ bên trên...</p>
+                        <p class="text-sm md:text-base">Kết quả sẽ hiển thị ở đây. Hãy chọn một bài học và chọn chế độ luyện tập...</p>
                     </div>
                 </div>
             </div>
@@ -373,11 +381,14 @@
             return text.split(/([\s,.\n:;!?]+)/); 
         }
 
+        // ==========================================
+        // CHẾ ĐỘ 1: CHẠM MỞ TỪ
+        // ==========================================
         document.getElementById("btnMode1").addEventListener("click", () => {
             const tokens = parseText();
             if(!tokens) return;
             const area = document.getElementById('practiceArea');
-            area.innerHTML = '<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic">* Hướng dẫn: Chạm vào các khối màu tím để mở khóa từ bị ẩn.</div>';
+            area.innerHTML = '<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic border-l-4 border-indigo-400 pl-2">* Hướng dẫn: Toàn bộ từ bị che khuất. Chạm vào các khối màu tím để mở khóa từ bị ẩn.</div>';
             
             tokens.forEach(token => {
                 if (/^[\s,.\n:;!?]+$/.test(token)) {
@@ -395,11 +406,14 @@
             });
         });
 
+        // ==========================================
+        // CHẾ ĐỘ 2: ĐIỀN CHỖ TRỐNG - SAI 3 LẦN
+        // ==========================================
         document.getElementById("btnMode2").addEventListener("click", () => {
             const tokens = parseText();
             if(!tokens) return;
             const area = document.getElementById('practiceArea');
-            area.innerHTML = '<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic">* Hướng dẫn: Các từ bị viền cam là từ bạn đã sai trước đó. Sai 3 lần hệ thống sẽ tự động điền và ghi nhớ!</div>';
+            area.innerHTML = '<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic border-l-4 border-emerald-400 pl-2">* Hướng dẫn: Gõ từ còn thiếu (không cần viết hoa). Các từ viền cam là từ bạn đã sai trước đó. Nhấn Phím Cách (Space) để tự động xóa nếu lỡ gõ sai. Nếu gõ sai 3 lần hệ thống sẽ ghi nhớ.</div>';
             
             tokens.forEach(token => {
                 if (/^[\s,.\n:;!?]+$/.test(token)) {
@@ -408,7 +422,6 @@
                     
                     let targetWord = removeVietnameseTones(token);
                     let isWrongPreviously = globalWrongWords.includes(targetWord);
-                    
                     let shouldHide = isWrongPreviously || (Math.random() > 0.6);
 
                     if (!shouldHide) { 
@@ -441,11 +454,9 @@
                             if (isWrongPreviously && isFirstTry) {
                                 removeWrongWord(targetWord);
                             }
-
                             const span = document.createElement('span');
                             span.className = 'word-box bg-emerald-100 text-emerald-800 font-bold border-none rounded px-2';
                             span.innerText = token;
-                            
                             focusNext();
                             input.parentNode.replaceChild(span, input);
                         };
@@ -453,13 +464,11 @@
                         const handleWrong = () => {
                             mistakeCount++;
                             isFirstTry = false; 
-
                             if (mistakeCount >= 3) {
                                 addWrongWord(targetWord);
                                 const span = document.createElement('span');
                                 span.className = 'word-box bg-red-100 text-red-800 font-bold border-none rounded px-2';
                                 span.innerText = token; 
-                                
                                 focusNext();
                                 input.parentNode.replaceChild(span, input);
                             } else {
@@ -497,15 +506,14 @@
         });
 
         // ==========================================
-        // CHẾ ĐỘ 3: GÕ CHỮ CÁI ĐẦU - GỌI BÀN PHÍM ĐIỆN THOẠI
+        // CHẾ ĐỘ 3: GÕ CHỮ CÁI ĐẦU 
         // ==========================================
         document.getElementById("btnMode3").addEventListener("click", () => {
             const tokens = parseText();
             if(!tokens) return;
             const area = document.getElementById('practiceArea');
-            area.innerHTML = '<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic">* Hướng dẫn: Gõ liên tục phím chữ cái đầu tiên của từng từ để mở khóa. <br/><span class="text-blue-500 font-semibold">(Nếu bàn phím bị ẩn, hãy chạm vào vùng này để hiện lại)</span></div>';
+            area.innerHTML = '<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic border-l-4 border-amber-400 pl-2">* Hướng dẫn: Gõ liên tục phím chữ cái đầu tiên (không cần in hoa). Sai 3 lần sẽ tự hiện đáp án. Nếu bàn phím bị ẩn, chạm vào đây để mở lại.</div>';
             
-            // TẠO INPUT TÀNG HÌNH ĐỂ GỌI BÀN PHÍM ĐIỆN THOẠI
             const hiddenInput = document.createElement('input');
             hiddenInput.type = 'text';
             hiddenInput.className = 'absolute opacity-0 w-[1px] h-[1px] -z-10';
@@ -515,7 +523,6 @@
             hiddenInput.setAttribute('spellcheck', 'false');
             area.appendChild(hiddenInput);
 
-            // Bấm vào khu vực học sẽ focus lại input tàng hình để gọi bàn phím
             area.onclick = () => {
                 hiddenInput.focus();
             };
@@ -527,39 +534,203 @@
                     span.innerText = token;
                     area.appendChild(span);
                 } else if(token.trim() !== "") {
+                    let targetWord = removeVietnameseTones(token);
+                    let isWrongPreviously = globalWrongWords.includes(targetWord);
+                    
                     const span = document.createElement('span');
-                    span.className = 'word-box text-transparent bg-amber-200 px-1 md:px-1.5 rounded transition-colors duration-300 border-b-2 border-amber-300';
+                    if (isWrongPreviously) {
+                        span.className = 'word-box text-transparent bg-orange-100 px-1 md:px-1.5 rounded transition-colors duration-300 border-2 border-dashed border-orange-400';
+                    } else {
+                        span.className = 'word-box text-transparent bg-amber-200 px-1 md:px-1.5 rounded transition-colors duration-300 border-b-2 border-amber-300';
+                    }
                     span.innerText = token;
                     area.appendChild(span);
-                    wordsData.push({ element: span, word: token });
+                    wordsData.push({ 
+                        element: span, 
+                        word: token,
+                        cleanWord: targetWord,
+                        isWrongPreviously: isWrongPreviously
+                    });
                 }
             });
 
             let currentIndex = 0;
+            let mistakeCount = 0;
+            let isFirstTry = true;
             
-            // Lắng nghe sự kiện gõ phím trực tiếp trên thẻ tàng hình
             hiddenInput.addEventListener('input', (e) => {
                 if(currentIndex >= wordsData.length) return;
-                
                 const val = hiddenInput.value;
                 if(val.length === 0) return;
                 
-                const typedChar = val.slice(-1); // Lấy ký tự cuối cùng vừa gõ
-                hiddenInput.value = ''; // Xóa ngay để không bị tích tụ
+                const typedChar = val.slice(-1); 
+                hiddenInput.value = ''; 
                 
                 const targetObj = wordsData[currentIndex];
-                const expectedLetter = removeVietnameseTones(targetObj.word.charAt(0));
+                const expectedLetter = targetObj.cleanWord.charAt(0);
                 const cleanTypedLetter = removeVietnameseTones(typedChar);
                 
                 if(cleanTypedLetter === expectedLetter) {
-                    targetObj.element.classList.remove('text-transparent', 'bg-amber-200', 'border-b-2', 'border-amber-300');
-                    targetObj.element.classList.add('text-amber-900', 'font-bold');
+                    if (targetObj.isWrongPreviously && isFirstTry) {
+                        removeWrongWord(targetObj.cleanWord);
+                    }
+                    targetObj.element.className = 'word-box text-amber-900 font-bold px-1 md:px-1.5';
                     currentIndex++;
+                    mistakeCount = 0;
+                    isFirstTry = true;
+                } else {
+                    mistakeCount++;
+                    isFirstTry = false;
+                    if (mistakeCount >= 3) {
+                        addWrongWord(targetObj.cleanWord);
+                        targetObj.element.className = 'word-box bg-red-100 text-red-800 font-bold rounded px-1 md:px-1.5';
+                        currentIndex++;
+                        mistakeCount = 0;
+                        isFirstTry = true;
+                    } else {
+                        targetObj.element.classList.add('flash-error');
+                        setTimeout(() => targetObj.element.classList.remove('flash-error'), 500);
+                    }
                 }
             });
 
-            // Delay nhỏ để tránh giật lag UI trước khi bật bàn phím
             setTimeout(() => hiddenInput.focus(), 150);
+        });
+
+        // ==========================================
+        // CHẾ ĐỘ 4: ẨN DẦN (Progressive Fading)
+        // ==========================================
+        document.getElementById("btnMode4").addEventListener("click", () => {
+            const tokens = parseText();
+            if(!tokens) return;
+            const area = document.getElementById('practiceArea');
+            
+            let html = `<div class="text-[11px] md:text-sm text-gray-500 mb-3 font-normal italic border-l-4 border-sky-400 pl-2">* Hướng dẫn: Kéo thanh trượt để tăng dần mức độ làm mờ văn bản (giúp não bộ thích nghi dần). Bạn có thể chạm vào ô trống để xem lại từ nếu trót quên.</div>`;
+            
+            html += `
+                <div class="mb-4 bg-sky-50 p-3 rounded-lg flex items-center gap-3 md:gap-4 border border-sky-100">
+                    <span class="text-xs md:text-sm font-bold text-sky-700 whitespace-nowrap">Độ khó:</span>
+                    <input type="range" id="fadeSlider" min="0" max="4" value="0" class="flex-grow h-2 bg-sky-200 rounded-lg appearance-none cursor-pointer">
+                    <span id="fadeLabel" class="text-xs md:text-sm font-bold text-blue-600 w-10 text-right">0%</span>
+                </div>
+            `;
+            html += `<div id="fadeContent" class="leading-[2.2] md:leading-loose"></div>`;
+            
+            area.innerHTML = html;
+            
+            const slider = document.getElementById('fadeSlider');
+            const fadeLabel = document.getElementById('fadeLabel');
+            const fadeContent = document.getElementById('fadeContent');
+            
+            const renderFadedText = (level) => {
+                const percentages = [0, 0.25, 0.5, 0.75, 1];
+                const hideProb = percentages[level];
+                fadeLabel.innerText = (hideProb * 100) + "%";
+                
+                fadeContent.innerHTML = '';
+                tokens.forEach((token) => {
+                    if (/^[\s,.\n:;!?]+$/.test(token)) {
+                        fadeContent.appendChild(document.createTextNode(token));
+                    } else if(token.trim() !== "") {
+                        const span = document.createElement('span');
+                        if (Math.random() < hideProb) {
+                            span.className = 'word-box hidden-word bg-slate-200 text-transparent px-1.5 md:px-2 rounded select-none hover:bg-slate-300 transition duration-300';
+                            span.onclick = () => {
+                                span.classList.remove('bg-slate-200', 'text-transparent', 'hover:bg-slate-300');
+                                span.classList.add('text-slate-800', 'font-bold');
+                            };
+                        } else {
+                            span.className = 'word-box text-gray-800 px-1';
+                        }
+                        span.innerText = token;
+                        fadeContent.appendChild(span);
+                    }
+                });
+            };
+            
+            slider.addEventListener('input', (e) => {
+                renderFadedText(parseInt(e.target.value));
+            });
+            
+            renderFadedText(0); 
+        });
+
+        // ==========================================
+        // CHẾ ĐỘ 5: XẾP CÂU (Sentence Scramble)
+        // ==========================================
+        document.getElementById("btnMode5").addEventListener("click", () => {
+            const rawText = document.getElementById('sourceText').value;
+            if(!rawText) {
+                alert('Khung nhập chữ đang trống!');
+                return;
+            }
+            const area = document.getElementById('practiceArea');
+            
+            area.innerHTML = `
+                <div class="text-[11px] md:text-sm text-gray-500 mb-4 font-normal italic border-l-4 border-rose-400 pl-2">* Hướng dẫn: Phần mềm đã cắt bài học thành các cụm từ bị xáo trộn. Hãy chạm vào các khối chữ màu hồng bên dưới theo đúng thứ tự để ghép lại bài hoàn chỉnh.</div>
+                <div id="targetZone" class="min-h-[100px] md:min-h-[150px] p-3 md:p-4 bg-white border-2 border-dashed border-rose-300 rounded-xl mb-6 flex flex-wrap gap-2 content-start shadow-inner text-base md:text-lg"></div>
+                <div id="poolZone" class="flex flex-wrap gap-2 md:gap-3 bg-rose-50 p-3 md:p-4 rounded-xl border border-rose-100"></div>
+            `;
+            
+            const targetZone = document.getElementById('targetZone');
+            const poolZone = document.getElementById('poolZone');
+            
+            // Tách đoạn văn dựa vào dấu phẩy, chấm, chấm phẩy, chấm than, hỏi chấm hoặc xuống dòng
+            let chunksMatches = rawText.match(/[^.\n;!?,]+[.\n;!?,]*/g);
+            let chunks = [];
+            if (chunksMatches) {
+                chunks = chunksMatches.map(c => c.trim()).filter(c => c.length > 0);
+            }
+            
+            // Nếu không có dấu câu nào (VD bài thơ quá ngắn), thì tách theo từng dòng
+            if(chunks.length <= 1) {
+                 chunks = rawText.split('\n').map(c => c.trim()).filter(c => c.length > 0);
+            }
+
+            if(chunks.length === 0) return;
+
+            let expectedIndex = 0;
+            let chunkObjs = chunks.map((text, idx) => ({ text: text, id: idx }));
+            
+            // Xáo trộn ngẫu nhiên
+            let shuffled = [...chunkObjs].sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'px-3 py-1.5 md:py-2 bg-white text-rose-700 text-sm md:text-base border border-rose-200 rounded-lg hover:bg-rose-100 transition shadow-sm text-left';
+                btn.innerText = item.text;
+                
+                btn.onclick = () => {
+                    if (item.id === expectedIndex) {
+                        // Đúng khối
+                        btn.classList.remove('bg-white', 'text-rose-700', 'border-rose-200', 'hover:bg-rose-100');
+                        btn.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-200');
+                        btn.disabled = true;
+                        
+                        targetZone.appendChild(btn);
+                        expectedIndex++;
+                        
+                        // Kéo màn hình xuống để dễ nhìn phần được ghép
+                        if(window.innerWidth < 768) {
+                            targetZone.scrollIntoView({ behavior: "smooth", block: "end" });
+                        }
+                        
+                        // Hoàn thành
+                        if(expectedIndex === chunks.length) {
+                             const winMsg = document.createElement('div');
+                             winMsg.className = "w-full text-center text-emerald-600 font-bold mt-6 text-xl animate-bounce";
+                             winMsg.innerText = "🎉 Hoàn thành xuất sắc!";
+                             targetZone.appendChild(winMsg);
+                             poolZone.classList.add('hidden');
+                        }
+                    } else {
+                        // Sai khối
+                        btn.classList.add('flash-error');
+                        setTimeout(() => btn.classList.remove('flash-error'), 500);
+                    }
+                };
+                poolZone.appendChild(btn);
+            });
         });
     </script>
 </body>
